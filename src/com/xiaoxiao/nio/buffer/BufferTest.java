@@ -1,121 +1,247 @@
 package com.xiaoxiao.nio.buffer;
 
-import java.nio.ByteBuffer;
+import org.testng.annotations.Test;
+
+import java.nio.*;
 
 public class BufferTest {
 
-    public static void main(String[] args) throws Exception {
-        testrewind();
-        testmark();
-        testcompact();
+
+
+
+    @Test
+    public void testBuffer() {
+        //ç”³è¯·ä¸€å—å†…å­˜
+        ByteBuffer allocate = ByteBuffer.allocate(10);
+        System.out.println(allocate);
+        //å†™å…¥æ•°æ®
+        allocate.put((byte) 1);
+        allocate.put((byte) 2);
+        System.out.println(allocate);
+        //åˆ‡æ¢è¯»æ¨¡å¼
+        allocate.flip();
+        //è¯»å–æ•°æ®
+        System.out.println(allocate);
+        System.out.println(allocate.get());
+        System.out.println(allocate.get());
     }
 
-    /**
-     * capacity&position&limit½âÎö 
-     * 
-     * capacity ±íÊ¾buff ÈİÁ¿ ÏÂÃæÀı×ÓÖĞÊÇ10 £¨¶ÁĞ´Ä£Ê½Ò»ÖÂ£© 
-     * position ±íÊ¾ÆğÊ¼Î»ÖÃ 
-     * limit ±íÊ¾ÏŞ¶¨Î»ÖÃ 
-     * flip() ÇĞ»»Ä£Ê½¹æÔò   position=0 limit=position clear() ÇåÀíbuf±äÎª³õÊ¼ position=0 limit=ÈİÁ¿ capacity=ÈİÁ¿
-     */
-    public static void testBuffer() {
-        /** ³õÊ¼»¯Îª position 0 limit 10 capacity 10 **/
-        ByteBuffer bufwrite = ByteBuffer.allocate(10);
-        /** ½øÈëĞ´Ä£Ê½(Ğ´ÈëÄ£Ê½Ò») position 4 limit 10 capacity 10 Ğ´Èë4¸ö×Ö½Ú ×î´ó²»ÄÜ³¬¹ılimit 10 **/
-        bufwrite.put("test".getBytes());
-        /** ÇĞ»»¶ÁÄ£Ê½ position 0 limit 4 capacity 10 ¶ÁÄ£Ê½Ö»ÄÜ¶ÁÈ¡bufÒÔĞ´ÈëµÄÊı¾İ£¨¼´test£© limitÖµ×÷ÎªÏŞ¶¨ÊÇĞ´ÈëÄ£Ê½ÖĞpositionÖµ£¬positionÖµÇå0 **/
-        bufwrite.flip();
-        /** ÇĞ»»¶ÁÄ£Ê½ position 0 limit 0 capacity 10 °´ÕÕÇĞ»»Ä£Ê½¹æÔò ÓÉÓÚÉÏ´ÎÃ»ÓĞ¶ÁÈ¡position=0 ËùÒÔÇĞ»»ºó limit=0 ËùÒÔÒ²²»ÄÜÔÙĞ´Èë **/
-        bufwrite.flip();
-        /** ³ö´í **/
-        // bufwrite.put("s".getBytes());
+    @Test
+    public void testBuffer_wrap() {
 
-        bufwrite.clear();
+        byte[] byteArray = new byte[]{1, 2, 3};
+        short[] shortArray = new short[]{1, 2, 3, 4};
+        int[] intArray = new int[]{1, 2, 3, 4, 5};
+        long[] longArray = new long[]{1, 2, 3, 4, 5, 6};
+        float[] floatArray = new float[]{1, 2, 3, 4, 5, 6, 7};
+        double[] doubleArray = new double[]{1, 2, 3, 4, 5, 6, 7, 8};
+        char[] charArray = new char[]{'a', 'b', 'c', 'd'};
 
-        /** ½øÈëĞ´Ä£Ê½(Ğ´ÈëÄ£Ê½Ò») position 4 limit 10 capacity 10 Ğ´Èë4¸ö×Ö½Ú ×î´ó²»ÄÜ³¬¹ılimit 10 **/
-        bufwrite.put("test".getBytes());
-        /** ÇĞ»»¶ÁÄ£Ê½ position 0 limit 4 capacity 10 ¶ÁÄ£Ê½Ö»ÄÜ¶ÁÈ¡bufÒÔĞ´ÈëµÄÊı¾İ£¨¼´test£© limitÖµ×÷ÎªÏŞ¶¨ÊÇĞ´ÈëÄ£Ê½ÖĞpositionÖµ£¬positionÖµÇå0 **/
-        bufwrite.flip();
-        /** ¶ÁÈ¡Ò»¸ö×Ö½Ú position 1 limit 4 capacity 10 **/
-        System.out.println(bufwrite.get());
-        /** ÇĞ»»¶ÁÄ£Ê½ position 0 limit 1 capacity 10 °´ÕÕÇĞ»»Ä£Ê½¹æÔò ÓÉÓÚÉÏ´ÎÃ»ÓĞ¶ÁÈ¡position=0 ËùÒÔÇĞ»»ºó limit=0 ËùÒÔÒ²²»ÄÜÔÙĞ´Èë **/
-        bufwrite.flip();
-        /** Ğ´ÈëÒ»¸ö×Ö½Ú ³¬¹ılimit×Ö½ÚÊı±¨´íBufferOverflowException **/
-        bufwrite.put("s".getBytes());
+        /** *Buffer.wrapæä¾›äº†Heap*Bufferçš„å·¥å‚æ–¹æ³•  **/
+        ByteBuffer byteBuffer = ByteBuffer.wrap(byteArray);
+        ByteBuffer byteBuffer2 = ByteBuffer.wrap(byteArray,1,2);
+        ShortBuffer shortBuffer = ShortBuffer.wrap(shortArray);
+        IntBuffer intBuffer = IntBuffer.wrap(intArray);
+        LongBuffer longBuffer = LongBuffer.wrap(longArray);
+        FloatBuffer floatBuffer = FloatBuffer.wrap(floatArray);
+        DoubleBuffer doubleBuffer = DoubleBuffer.wrap(doubleArray);
+        CharBuffer charBuffer = CharBuffer.wrap(charArray);
+
+        System.out.println("byteBuffer=" + byteBuffer.getClass().getName());
+        System.out.println("shortBuffer=" + shortBuffer.getClass().getName());
+        System.out.println("intBuffer=" + intBuffer.getClass().getName());
+        System.out.println("longBuffer=" + longBuffer.getClass().getName());
+        System.out.println("floatBuffer=" + floatBuffer.getClass().getName());
+        System.out.println("doubleBuffer=" + doubleBuffer.getClass().getName());
+        System.out.println("charBuffer=" + charBuffer.getClass().getName());
+
+        System.out.println();
+
+        System.out.println("byteBuffer.=" + byteBuffer);
+        System.out.println("byteBuffer2.=" + byteBuffer2);
+        System.out.println("shortBuffer.=" + shortBuffer);
+        System.out.println("intBuffer.=" + intBuffer);
+        System.out.println("longBuffer.=" + longBuffer);
+        System.out.println("floatBuffer.=" + floatBuffer);
+        System.out.println("doubleBuffer.=" + doubleBuffer);
+        System.out.println("charBuffer.=" + charBuffer);
     }
 
-    /**
-     * Buffer.rewind()½«positionÉè»Ø0£¬ËùÒÔÄã¿ÉÒÔÖØ¶ÁBufferÖĞµÄËùÓĞÊı¾İ¡£limit±£³Ö²»±ä£¬ÈÔÈ»±íÊ¾ÄÜ´ÓBufferÖĞ¶ÁÈ¡¶àÉÙ¸öÔªËØ£¨byte¡¢charµÈ£©¡£
-     */
-    public static void testrewind() {
+    @Test
+    public void testBuffer_limit() {
+        ByteBuffer buffer = ByteBuffer.allocate(6);
+        System.out.println(buffer);
+        buffer.limit(3);
+        System.out.println();
+        System.out.println(buffer);
+        buffer.put((byte) 1);
+        buffer.put((byte) 2);
+        buffer.put((byte) 3);
+        buffer.put((byte) 4);  //BufferOverflowException
 
-        /** Bufeer rewind()ÖØ¸´¶ÁÈ¡ **/
-        ByteBuffer buf = ByteBuffer.allocate(1000);
-        buf.put("A".getBytes());
-        buf.put("B".getBytes());
-        buf.put("C".getBytes());
-        buf.put("D".getBytes());
-        buf.put("E".getBytes());
-        buf.flip();
 
-        while (buf.hasRemaining()) {
-            System.out.println((char) buf.get());
+        byte[] byteArray = new byte[]{1,2,3,4,5,6};
+        ByteBuffer buffer2 = ByteBuffer.wrap(byteArray);
+        System.out.println(buffer2);
+        buffer2.limit(3);
+        System.out.println();
+        System.out.println(buffer2);
+        System.out.println(buffer2.get());
+        System.out.println(buffer2.get());
+        System.out.println(buffer2.get());
+        System.out.println(buffer2.get()); //BufferUnderflowException
+    }
+
+    @Test
+    public void testBuffer_position() {
+        /** å†™å…¥ **/
+        ByteBuffer buffer = ByteBuffer.allocate(6);
+        buffer.put((byte) 1);
+        buffer.put((byte) 2);
+        System.out.println(buffer);
+        buffer.position(0);
+        System.out.println(buffer);
+        buffer.put((byte) 3);
+        buffer.put((byte) 4);  //BufferOverflowException
+        for (int i = 0; i < buffer.array().length; i++) {
+            System.out.println(buffer.array()[i] + " ");
         }
-        buf.rewind();
-        while (buf.hasRemaining()) {
-            System.out.println((char) buf.get());
-        }
-
-        buf.clear();
-        System.out.println("===================testrewind===================");
+        System.out.println("-------------------------");
+        /** è¯»å– **/
+        byte[] byteArray = new byte[]{1,2,3,4,5,6};
+        ByteBuffer buffer2 = ByteBuffer.wrap(byteArray);
+        System.out.println(buffer2.get());
+        System.out.println(buffer2.get());
+        System.out.println(buffer2);
+        buffer.position(0);
+        System.out.println(buffer2);
+        System.out.println(buffer2.get());
+        System.out.println(buffer2.get());
     }
 
-    /**
-     * Í¨¹ıµ÷ÓÃBuffer.mark()·½·¨£¬¿ÉÒÔ±ê¼ÇBufferÖĞµÄÒ»¸öÌØ¶¨position¡£Ö®ºó¿ÉÒÔÍ¨¹ıµ÷ÓÃBuffer.reset()·½·¨»Ö¸´µ½Õâ¸öposition
-     */
-    public static void testmark() {
 
-        /** Bufeer rewind()ÖØ¸´¶ÁÈ¡ **/
-        ByteBuffer buf = ByteBuffer.allocate(1000);
-        buf.put("A".getBytes());
-        buf.put("B".getBytes());
-        buf.put("C".getBytes());
-        buf.put("D".getBytes());
-        buf.put("E".getBytes());
+    @Test
+    public void testBuffer_remaining() {
+        /** å†™å…¥ **/
+        ByteBuffer buffer = ByteBuffer.allocate(6);
+        buffer.put((byte) 1);
+        System.out.println(buffer);
+        System.out.println(buffer.remaining());
+        buffer.put((byte) 2);
+        System.out.println(buffer);
+        System.out.println(buffer.remaining());
 
-        buf.flip();
-        buf.mark();
-        while (buf.hasRemaining()) {
-            System.out.println((char) buf.get());
-        }
-        buf.reset();
-        while (buf.hasRemaining()) {
-            System.out.println((char) buf.get());
-        }
-
-        buf.clear();
-        System.out.println("===================testmark===================");
+        System.out.println("-------------------------");
+        /** è¯»å– **/
+        byte[] byteArray = new byte[]{1,2,3,4,5,6};
+        ByteBuffer buffer2 = ByteBuffer.wrap(byteArray);
+        buffer2.get();
+        System.out.println(buffer2);
+        System.out.println(buffer2.remaining());
+        buffer2.get();
+        System.out.println(buffer2);
+        System.out.println(buffer2.remaining());
     }
 
-    /**
-     * compact()·½·¨½«ËùÓĞÎ´¶ÁµÄÊı¾İ¿½±´µ½BufferÆğÊ¼´¦¡£È»ºó½«positionÉèµ½×îºóÒ»¸öÎ´¶ÁÔªËØÕıºóÃæ¡£limitÊôĞÔÒÀÈ»Ïñclear()·½·¨Ò»Ñù£¬ÉèÖÃ³Écapacity¡£ÏÖÔÚBuffer×¼±¸ºÃĞ´Êı¾İÁË
-     */
-    public static void testcompact() {
-        /** Bufeer rewind()ÖØ¸´¶ÁÈ¡ **/
-        ByteBuffer buf = ByteBuffer.allocate(1000);
-        buf.put("A".getBytes());
-        buf.put("B".getBytes());
-        buf.put("C".getBytes());
-        buf.put("D".getBytes());
-        buf.put("E".getBytes());
-        
-        buf.flip();
-        System.out.println((char) buf.get());
-        System.out.println((char) buf.get());
-        System.out.println(buf);
-        buf.compact();
-        System.out.println(buf);
-        
+
+    @Test
+    public void testBuffer_mark() {
+        /** å†™å…¥ **/
+        ByteBuffer buffer = ByteBuffer.allocate(6);
+        buffer.mark();
+        buffer.put((byte) 1);
+        buffer.put((byte) 2);
+        System.out.println(buffer);
+        buffer.reset();
+        buffer.put((byte) 3);
+        buffer.put((byte) 4);
+        for (int i = 0; i < buffer.array().length; i++) {
+            System.out.println(buffer.array()[i] + " ");
+        }
+
+        System.out.println("-------------------------");
+        /** è¯»å– **/
+        byte[] byteArray = new byte[]{1,2,3,4,5,6};
+        ByteBuffer buffer2 = ByteBuffer.wrap(byteArray);
+        buffer2.mark();
+        System.out.println(buffer2.get());
+        System.out.println(buffer2.get());
+        System.out.println(buffer2);
+        buffer2.reset();
+        System.out.println(buffer2);
+        System.out.println(buffer2.get());
+        System.out.println(buffer2.get());
     }
 
+    @Test
+    public void testBuffer_isRead() {
+        byte[] byteArray = new byte[]{1, 2, 3};
+        short[] shortArray = new short[]{1, 2, 3, 4};
+        int[] intArray = new int[]{1, 2, 3, 4, 5};
+        long[] longArray = new long[]{1, 2, 3, 4, 5, 6};
+        float[] floatArray = new float[]{1, 2, 3, 4, 5, 6, 7};
+        double[] doubleArray = new double[]{1, 2, 3, 4, 5, 6, 7, 8};
+        char[] charArray = new char[]{'a', 'b', 'c', 'd'};
+
+        /** *Buffer.wrapæä¾›äº†Heap*Bufferçš„å·¥å‚æ–¹æ³•  **/
+        ByteBuffer byteBuffer = ByteBuffer.wrap(byteArray);
+        ShortBuffer shortBuffer = ShortBuffer.wrap(shortArray);
+        IntBuffer intBuffer = IntBuffer.wrap(intArray);
+        LongBuffer longBuffer = LongBuffer.wrap(longArray);
+        FloatBuffer floatBuffer = FloatBuffer.wrap(floatArray);
+        DoubleBuffer doubleBuffer = DoubleBuffer.wrap(doubleArray);
+        CharBuffer charBuffer = CharBuffer.wrap(charArray);
+
+        System.out.println("byteBuffer=" + byteBuffer.isReadOnly());
+        System.out.println("byteBuffer=" + shortBuffer.isReadOnly());
+        System.out.println("byteBuffer=" + intBuffer.isReadOnly());
+        System.out.println("byteBuffer=" + longBuffer.isReadOnly());
+        System.out.println("byteBuffer=" + floatBuffer.isReadOnly());
+        System.out.println("byteBuffer=" + doubleBuffer.isReadOnly());
+        System.out.println("byteBuffer=" + charBuffer.isReadOnly());
+    }
+
+    @Test
+    public void testBuffer_isDirect() {
+        System.out.println(ByteBuffer.allocate(10).isDirect());
+        System.out.println(ByteBuffer.allocateDirect(10).isDirect());
+    }
+
+
+
+    @Test
+    public void testBuffer_clear() {
+        /** è¯»å– **/
+        byte[] byteArray = new byte[]{1,2,3,4,5,6};
+        ByteBuffer buffer2 = ByteBuffer.wrap(byteArray);
+        buffer2.limit(3);
+        System.out.println(buffer2);
+        System.out.println(buffer2.get());
+        buffer2.clear();
+        System.out.println(buffer2);
+        System.out.println(buffer2.get());
+    }
+
+
+
+    @Test
+    public void testBuffer_hasArray(){
+        /** è¯»å– **/
+        byte[] byteArray = new byte[]{1,2,3,4,5,6};
+        ByteBuffer buffer2 = ByteBuffer.wrap(byteArray);
+        System.out.println(buffer2.hasArray());
+    }
+
+    @Test
+    public void testBuffer_rewind(){
+        /** è¯»å– **/
+        byte[] byteArray = new byte[]{1,2,3,4,5,6};
+        ByteBuffer buffer2 = ByteBuffer.wrap(byteArray);
+        buffer2.limit(3);
+        System.out.println(buffer2);
+        System.out.println(buffer2.get());
+        buffer2.rewind();
+        System.out.println(buffer2);
+        System.out.println(buffer2.get());
+    }
 }
