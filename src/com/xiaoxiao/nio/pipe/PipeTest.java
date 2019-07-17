@@ -24,13 +24,9 @@ public class PipeTest {
 		buf = ByteBuffer.allocate(48);
 		sourceChannel.read(buf);
 		buf.flip();
-		
-		
-		System.out.println((char)buf.get());
-		System.out.println((char)buf.get());
-		System.out.println((char)buf.get());
-		
-		
-	}
 
+		System.out.println((char)buf.get());
+		System.out.println((char)buf.get());
+		System.out.println((char)buf.get());
+	}
 }
