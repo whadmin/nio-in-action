@@ -142,46 +142,46 @@ public abstract class Reference<T> {
     }
 
 
-    static boolean tryHandlePending(boolean waitForNotify) {
-        Reference<Object> r;
-        Cleaner c;
-        try {
-            synchronized (lock) {
-                /** 判断是当前对象是否加入pending，且是队列首节点 **/
-                if (pending != null) {
-                    /** 当前对象从pending队列出队 **/
-                    r = pending;
-                    pending = r.discovered;
-                    r.discovered = null;
-                    /** 判断当前对象是否是Cleaner  **/
-                    c = r instanceof Cleaner ? (Cleaner) r : null;
-                } else {
-                    /** 等待 **/
-                    if (waitForNotify) {
-                        lock.wait();
+        static boolean tryHandlePending(boolean waitForNotify) {
+            Reference<Object> r;
+            Cleaner c;
+            try {
+                synchronized (lock) {
+                    /** 判断是当前对象是否加入pending，且是队列首节点 **/
+                    if (pending != null) {
+                        /** 当前对象从pending队列出队 **/
+                        r = pending;
+                        pending = r.discovered;
+                        r.discovered = null;
+                        /** 判断当前对象是否是Cleaner  **/
+                        c = r instanceof Cleaner ? (Cleaner) r : null;
+                    } else {
+                        /** 等待 **/
+                        if (waitForNotify) {
+                            lock.wait();
+                        }
+                        // retry if waited
+                        return waitForNotify;
                     }
-                    // retry if waited
-                    return waitForNotify;
                 }
+            } catch (OutOfMemoryError x) {
+                Thread.yield();
+                return true;
+            } catch (InterruptedException x) {
+                return true;
             }
-        } catch (OutOfMemoryError x) {
-            Thread.yield();
-            return true;
-        } catch (InterruptedException x) {
+
+            /** Cleaner清理工作 **/
+            if (c != null) {
+                c.clean();
+                return true;
+            }
+
+            /** 加入ReferenceQueue队列 **/
+            ReferenceQueue<? super Object> q = r.queue;
+            if (q != ReferenceQueue.NULL) q.enqueue(r);
             return true;
         }
-
-        /** Cleaner清理工作 **/
-        if (c != null) {
-            c.clean();
-            return true;
-        }
-
-        /** 加入ReferenceQueue队列 **/
-        ReferenceQueue<? super Object> q = r.queue;
-        if (q != ReferenceQueue.NULL) q.enqueue(r);
-        return true;
-    }
 
 
     /**

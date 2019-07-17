@@ -46,7 +46,7 @@ public class ReferenceQueue<T> {
         }
     }
 
-    /** 标识Reference队列的状态 **/
+    /** 标识Reference对象状态 **/
     static ReferenceQueue<Object> NULL = new Null<>();
     static ReferenceQueue<Object> ENQUEUED = new Null<>();
 
@@ -65,19 +65,31 @@ public class ReferenceQueue<T> {
      */
     private long queueLength = 0;
 
+    /**
+     * 这个方法仅会被Reference中ReferenceHandler线程调用
+     * 将Reference加入ReferenceQueue队列中
+     */
     boolean enqueue(Reference<? extends T> r) { /* Called only by Reference class */
         synchronized (lock) {
-            // Check that since getting the lock this reference hasn't already been
-            // enqueued (and even then removed)
+            /**
+             * 如果Reference对象没有设置queue，或者已经加入ReferenceQueue队列中 (queue == ENQUEUED)
+             * 直接返回false
+             * **/
             ReferenceQueue<?> queue = r.queue;
             if ((queue == NULL) || (queue == ENQUEUED)) {
                 return false;
             }
+            /** 判断 **/
             assert queue == this;
+
+            /** 标识Reference对象加入ReferenceQueue队列   **/
             r.queue = ENQUEUED;
+            /** 将Reference加入ReferenceQueue队列中 **/
             r.next = (head == null) ? r : head;
             head = r;
+            /** 队列数量+1 **/
             queueLength++;
+            /** 如果Reference对象为FinalReference 引用数量+1 **/
             if (r instanceof FinalReference) {
                 sun.misc.VM.addFinalRefCount(1);
             }
@@ -86,31 +98,8 @@ public class ReferenceQueue<T> {
         }
     }
 
-    @SuppressWarnings("unchecked")
-    private Reference<? extends T> reallyPoll() {       /* Must hold lock */
-        Reference<? extends T> r = head;
-        if (r != null) {
-            head = (r.next == r) ?
-                null :
-                r.next; // Unchecked due to the next field having a raw type in Reference
-            r.queue = NULL;
-            r.next = r;
-            queueLength--;
-            if (r instanceof FinalReference) {
-                sun.misc.VM.addFinalRefCount(-1);
-            }
-            return r;
-        }
-        return null;
-    }
-
     /**
-     * Polls this queue to see if a reference object is available.  If one is
-     * available without further delay then it is removed from the queue and
-     * returned.  Otherwise this method immediately returns <tt>null</tt>.
-     *
-     * @return  A reference object, if one was immediately available,
-     *          otherwise <code>null</code>
+     * 从队列头部弹出节点
      */
     public Reference<? extends T> poll() {
         if (head == null)
@@ -120,25 +109,44 @@ public class ReferenceQueue<T> {
         }
     }
 
+    @SuppressWarnings("unchecked")
+    private Reference<? extends T> reallyPoll() {       /* Must hold lock */
+        Reference<? extends T> r = head;
+        /** 将Reference从ReferenceQueue队列中取出 **/
+        if (r != null) {
+            /** 获取ReferenceQueue队列head之后Reference对象 **/
+            head = (r.next == r) ?
+                null :
+                r.next;
+
+            /** 标识Reference对象从ReferenceQueue队列中被取出  **/
+            r.queue = NULL;
+            r.next = r;
+
+            /** 队列数量+1 **/
+            queueLength--;
+
+            /** 如果Reference对象为FinalReference 引用数量+1 **/
+            if (r instanceof FinalReference) {
+                sun.misc.VM.addFinalRefCount(-1);
+            }
+            /** 返回 **/
+            return r;
+        }
+        return null;
+    }
+
     /**
-     * Removes the next reference object in this queue, blocking until either
-     * one becomes available or the given timeout period expires.
-     *
-     * <p> This method does not offer real-time guarantees: It schedules the
-     * timeout as if by invoking the {@link Object#wait(long)} method.
-     *
-     * @param  timeout  If positive, block for up to <code>timeout</code>
-     *                  milliseconds while waiting for a reference to be
-     *                  added to this queue.  If zero, block indefinitely.
-     *
-     * @return  A reference object, if one was available within the specified
-     *          timeout period, otherwise <code>null</code>
-     *
-     * @throws  IllegalArgumentException
-     *          If the value of the timeout argument is negative
-     *
-     * @throws  InterruptedException
-     *          If the timeout wait is interrupted
+     * 删除队列元素
+     */
+    public Reference<? extends T> remove() throws InterruptedException {
+        return remove(0);
+    }
+
+
+    /**
+     * 移除并返回队列首节点，此方法将阻塞到获取到一个Reference对象或者超时才会返回
+     *  timeout时间的单位是毫秒
      */
     public Reference<? extends T> remove(long timeout)
         throws IllegalArgumentException, InterruptedException
@@ -164,15 +172,5 @@ public class ReferenceQueue<T> {
         }
     }
 
-    /**
-     * Removes the next reference object in this queue, blocking until one
-     * becomes available.
-     *
-     * @return A reference object, blocking until one becomes available
-     * @throws  InterruptedException  If the wait is interrupted
-     */
-    public Reference<? extends T> remove() throws InterruptedException {
-        return remove(0);
-    }
 
 }

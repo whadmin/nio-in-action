@@ -1,4 +1,4 @@
-package com.xiaoxiao.nio.test01;
+package com.xiaoxiao.nio.socket;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;

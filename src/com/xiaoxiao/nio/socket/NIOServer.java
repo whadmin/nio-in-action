@@ -1,4 +1,4 @@
-package com.xiaoxiao.nio.test01;
+package com.xiaoxiao.nio.socket;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -13,11 +13,9 @@ import java.util.Iterator;
  * NIO服务端
  * @author 小路
  */
-public class NIOServer2 {
+public class NIOServer {
 	//通道管理器
 	private Selector selector;
-
-	private ServerSocketChannel serverChannel;
 
 	/**
 	 * 获得一个ServerSocket通道，并对该通道做一些初始化的工作
@@ -26,11 +24,11 @@ public class NIOServer2 {
 	 */
 	public void initServer(int port) throws IOException {
 		// 获得一个ServerSocket通道
-		serverChannel = ServerSocketChannel.open();
+		ServerSocketChannel serverChannel = ServerSocketChannel.open();
 		System.out.println("开启通道");
 		 
 		// 设置通道为非阻塞
-		serverChannel.configureBlocking(true);
+		serverChannel.configureBlocking(false);
 		System.out.println("设置为非阻塞");
 		
 		// 将该通道对应的ServerSocket绑定到port端口
@@ -40,6 +38,11 @@ public class NIOServer2 {
 		// 获得一个通道管理器
 		this.selector = Selector.open();
 		System.out.println("获取通道");
+
+		//将通道管理器和该通道绑定，并为该通道注册SelectionKey.OP_ACCEPT事件,注册该事件后，
+		//当该事件到达时，selector.select()会返回，如果该事件没到达selector.select()会一直阻塞。
+		serverChannel.register(selector, SelectionKey.OP_ACCEPT);  //返回selectionKey类型
+		System.out.println("注册accept事件");
 	}
 
 
@@ -62,7 +65,24 @@ public class NIOServer2 {
 				// 删除已选的key,以防重复处理
 				ite.remove();
 				// 客户端请求连接事件
-				if (key.isReadable()) {
+				if (key.isAcceptable()) {
+					System.out.println("第一次连接");
+					ServerSocketChannel server =  (ServerSocketChannel) key
+							.channel();
+					// 获得和客户端连接的通道
+					SocketChannel channel = server.accept();
+					// 设置成非阻塞
+					channel.configureBlocking(false);
+
+					//在这里可以给客户端发送信息哦
+					channel.write(ByteBuffer.wrap(new String("server").getBytes()));
+					
+					
+					//在和客户端连接成功之后，为了可以接收到客户端的信息，需要给通道设置读的权限。
+					channel.register(this.selector, SelectionKey.OP_READ);
+					
+					// 获得了可读的事件
+				} else if (key.isReadable()) {
 					Thread.sleep(1000);
 					 System.out.println("服务端读");
 				     read(key);
@@ -88,7 +108,6 @@ public class NIOServer2 {
 		byte[] data = buffer.array();
 		String msg = new String(data).trim();
 		System.out.println("服务端收到信息："+msg);
-
 		ByteBuffer outBuffer = ByteBuffer.wrap(msg.getBytes());
 		channel.write(outBuffer);// 将消息回送给客户端
 	}
@@ -98,35 +117,11 @@ public class NIOServer2 {
 	 * @throws IOException 
 	 */
 	public static void main(String[] args) throws Exception {
-		NIOServer2 server = new NIOServer2();
+		NIOServer server = new NIOServer();
 		server.initServer(8000);
 //		server.initServer(6000);
-		server.acceptors();
+		server.listen();
 	
-	}
-
-	public void acceptors() {
-		new Thread(()->{
-			while (true) {
-				System.out.println("acceptors：star");
-
-				try {
-					SocketChannel channel = serverChannel.accept();
-					// 设置成非阻塞
-					channel.configureBlocking(false);
-
-					//在这里可以给客户端发送信息哦
-					channel.write(ByteBuffer.wrap(new String("server").getBytes()));
-					//在和客户端连接成功之后，为了可以接收到客户端的信息，需要给通道设置读的权限。
-					channel.register(this.selector, SelectionKey.OP_READ);
-					this.listen();
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-				System.out.println("acceptors：end");
-
-			}
-		}).start();
 	}
 
 }

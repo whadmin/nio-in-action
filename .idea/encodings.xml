@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="Encoding" defaultCharsetForPropertiesFiles="UTF-8" addBOMForNewFiles="with NO BOM">
+    <file url="file://$PROJECT_DIR$" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/map_read.txt" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/src/com/xiaoxiao/nio/ScatterGather/GatherTest.java" charset="GBK" />
+    <file url="file://$PROJECT_DIR$/src/com/xiaoxiao/nio/ScatterGather/ScatterTest.java" charset="GBK" />
+    <file url="file://$PROJECT_DIR$/src/com/xiaoxiao/nio/buffer/BufferTest.java" charset="GBK" />
+    <file url="file://$PROJECT_DIR$/src/com/xiaoxiao/nio/buffer/ByteBufferTest.java" charset="GBK" />
+    <file url="file://$PROJECT_DIR$/src/com/xiaoxiao/nio/channel/ChannelTest.java" charset="GBK" />
+    <file url="file://$PROJECT_DIR$/src/com/xiaoxiao/nio/channel/MappedMethodTest.java" charset="GBK" />
+    <file url="file://$PROJECT_DIR$/src/com/xiaoxiao/nio/pipe/PipeTest.java" charset="GBK" />
+    <file url="file://$PROJECT_DIR$/src/com/xiaoxiao/nio/selector/SelectorClientTest.java" charset="GBK" />
+    <file url="file://$PROJECT_DIR$/src/com/xiaoxiao/nio/selector/SelectorServerTest.java" charset="GBK" />
+    <file url="file://$PROJECT_DIR$/src/com/xiaoxiao/nio/socket/NIOClient.java" charset="GBK" />
+    <file url="file://$PROJECT_DIR$/src/com/xiaoxiao/nio/socket/NIOServer.java" charset="GBK" />
+    <file url="file://$PROJECT_DIR$/src/com/xiaoxiao/nio/socket/NIOServer2.java" charset="GBK" />
+    <file url="file://$PROJECT_DIR$/src/normal/http/HttpRequest.java" charset="GBK" />
+    <file url="PROJECT" charset="GBK" />
+  </component>
+</project>
