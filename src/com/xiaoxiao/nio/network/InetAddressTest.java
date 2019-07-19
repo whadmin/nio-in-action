@@ -152,6 +152,7 @@ public class InetAddressTest {
         System.out.println("=================");
 
 
+
         for (int i = 0; i < baiduAddressArray.length; i++) {
             InetAddress baiduAddress = baiduAddressArray[i];
             System.out.println("www.baidu.com的IP地址信息：" + baiduAddress.getClass().getName() + " " + baiduAddress.getHostAddress());
